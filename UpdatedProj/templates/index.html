@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Air Scribbling using OpenCV</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+</head>
+<body>
+  <header class="ocr-header">
+    <a href="{{ url_for('landing') }}" class="back-button">⬅ Back to Home</a>
+    <h1>Air Scribbling using OpenCV</h1>
+  </header>
+  <div class="ocr-container">
+    <div class="video-section">
+      <h2>Draw and Recognize</h2>
+      <div class="video-container">
+        <img id="videoFeed" src="{{ url_for('video_feed') }}" alt="Live Drawing Feed">
+      </div>
+    </div>
+    <div class="controls-section">
+      <div class="buttons">
+        <button onclick="clearCanvas()" class="action-button">🧹 Clear Canvas</button>
+        <button onclick="recognize()" class="action-button">📄 Recognize Text</button>
+      </div>
+      <div class="result-box">
+        <h3>Recognized Text</h3>
+        <p id="resultText">📝 Recognized text will appear here...</p>
+      </div>
+    </div>
+  </div>
+  <footer class="ocr-footer">
+    <!-- <p>Powered by Flask, Mediapipe, and Tesseract OCR</p> -->
+  </footer>
+
+  <script>
+  function clearCanvas() {
+    fetch('/clear_canvas', { method: 'POST' })
+      .then(res => res.json())
+      .then(data => {
+        alert(data.status);
+        // Note: Canvas clearing issue persists; this will be addressed separately if needed
+      })
+      .catch(err => console.error("Error clearing canvas:", err));
+  }
+
+  function recognize() {
+    fetch('/recognize_text', { method: 'POST' })
+      .then(res => res.json())
+      .then(data => {
+        document.getElementById('resultText').innerText = "📝 " + data.text || "No text found";
+      })
+      .catch(err => {
+        console.error("Error recognizing text:", err);
+        document.getElementById('resultText').innerText = "📝 Error during recognition";
+      });
+  }
+</script>
+</body>
+</html>
